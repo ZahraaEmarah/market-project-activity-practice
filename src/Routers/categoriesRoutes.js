@@ -3,14 +3,23 @@ const router = express.Router()
 const Category = require("../Models/category")
 
 // fetch all categories
-router.get("/", async (req, res) => {
-    const categories = await Category.find()
-    res.send({
-        "success": true,
-        "results": categories,
-        "messages": "OK"
+router.route("/")
+    .get((req, res) => {
+        Category.find((err, categories) => {
+            if (err) {
+                res.status(500).json({
+                    "success": false,
+                    "results": [],
+                    "messages": err
+                })
+            }
+            res.json({
+                "success": true,
+                "results": categories,
+                "messages": "OK"
+            })
+        })
     })
-})
 
 
 module.exports = router
