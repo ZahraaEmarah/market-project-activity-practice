@@ -92,5 +92,20 @@ router.route("/:id")
             })
         })
     })
+    .delete((req, res) => {
+        Product.findByIdAndDelete(req.params.id, (err) => {
+            if (err) {
+                res.status(500).json({
+                    "success": false,
+                    "result": {},
+                    "messages": err
+                })
+            }
+            res.json({
+                "success": true,
+                "messages": "Product deleted successfully"
+            })
+        } )
+    })
 
 module.exports = router
