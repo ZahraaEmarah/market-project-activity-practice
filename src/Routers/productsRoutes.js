@@ -42,7 +42,7 @@ router.route("/")
         })
         return router
     })
-    .post(async (req, res) => {
+    .post((req, res) => {
         if (Object.keys(req.body).length === 0) {
             res.status(400).json({
                 "success": false,
@@ -51,7 +51,7 @@ router.route("/")
         }
 
         const product = new Product(req.body)
-        await product.save((err) => {
+        product.save((err) => {
             if (err) {
                 res.status(500).json({
                     "success": false,
@@ -68,9 +68,71 @@ router.route("/")
     })
 
 
+router.use("/:id", (req, res, next) => {
+    Product.findById(req.params.id, (err, product) => {
+        if (err) {
+            res.status(500).json({
+                "success": false,
+                "result": {},
+                "messages": err
+            })
+        }
+        if(product){
+            req.product = product;
+            return next();
+        }
+        return res.status(404).json({
+            "success": true,
+            "result": {},
+            "messages": "Product Not Found"
+        })
+    })
+    return router
+})
 router.route("/:id")
     .get(async (req, res) => {
-        Product.findById(req.params.id, (err, product) => {
+        res.json({
+            "success": true,
+            "result": req.product,
+            "messages": "OK"
+        })
+        return router
+    })
+    .put((req, res) => {        
+        if (Object.keys(req.body).length === 0) {
+            res.status(400).json({
+                "success": false,
+                "messages": "Missing request body"
+            })
+        }
+        const { product } = req;
+        product.name = req.body.name;
+        product.description = req.body.description;
+        product.price = req.body.price;
+        product.quantity = req.body.quantity;
+        product.brand = req.body.brand;
+        product.category_id = req.body.category_id;
+        product.image_url = req.body.image_url;
+        product.images = req.body.images;
+        product.save();
+        res.json({
+            "success": true,
+            "result": req.product,
+            "messages": "Product updated successfully"
+        })  
+        return router
+    })
+    .patch((req, res) => {
+        const { product } = req;
+        if(req.body._id){
+            delete req.body._id
+        }
+        Object.entries(req.body).forEach((item) => {
+            const key = item[0];
+            const value = item[1];
+            product[key] = value;
+        })
+        product.save((err) => {
             if (err) {
                 res.status(500).json({
                     "success": false,
@@ -81,38 +143,12 @@ router.route("/:id")
             res.json({
                 "success": true,
                 "result": product,
-                "messages": "OK"
-            })
-        })
-        return router
-    })
-    .put((req, res) => {
-        const newProduct = req.body
-        
-        if (Object.keys(req.body).length === 0) {
-            res.status(400).json({
-                "success": false,
-                "messages": "Missing request body"
-            })
-        }
-
-        Product.findByIdAndUpdate(req.params.id, newProduct, (err, product) => {
-            if (err) {
-                res.status(500).json({
-                    "success": false,
-                    "result": {},
-                    "messages": err
-                })
-            }
-            res.json({
-                "success": true,
                 "messages": "Product updated successfully"
             })
         })
-        return router
     })
     .delete((req, res) => {
-        Product.findByIdAndDelete(req.params.id, (err) => {
+        req.product.remove((err) => {
             if (err) {
                 res.status(500).json({
                     "success": false,
@@ -120,11 +156,11 @@ router.route("/:id")
                     "messages": err
                 })
             }
-            res.json({
+            res.status(200).json({
                 "success": true,
                 "messages": "Product deleted successfully"
             })
-        } )
+        })
         return router
     })
 
