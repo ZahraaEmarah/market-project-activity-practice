@@ -1,4 +1,5 @@
 const express = require('express')
+const cors = require('cors');
 const mongoose = require('mongoose');
 const config_data = require('./config/config.json');
 
@@ -17,6 +18,8 @@ mongoose
         app.listen(port, () => {
             console.log(`Running on port ${port}`)
         })
+
+        app.use(cors())
 
         app.use(bodyParser.urlencoded({ extended: true}))
         app.use(bodyParser.json())
