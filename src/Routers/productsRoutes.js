@@ -6,17 +6,16 @@ const Product = require("../Models/product")
 router.route("/")
     .get((req, res) => {
         var query = {}
-        const options = {
+        var options = {
             page: req.query.pageNo,
             limit: req.query.size,
         };
 
         if(options.page == null || options.limit == null || options.page == "" || options.limit == ""){
-            res.status(400).json({
-                "success": false,
-                "results": [],
-                "messages": "Page number or size missing from parameters"
-            })
+            options = {
+                page: 0,
+                limit: 30,
+            };
         }
 
         if (req.query.categoryID) {
@@ -30,7 +29,8 @@ router.route("/")
                     "messages": err
                 })
             }
-            res.json({
+            console.log(products.docs)
+            res.render('products', {
                 "success": true,
                 "total": products.totalDocs,
                 "hasNext": products.hasNextPage,

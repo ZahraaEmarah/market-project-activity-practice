@@ -5,17 +5,21 @@ const Category = require("../Models/category")
 // fetch all categories
 router.route("/")
     .get((req, res) => {
-        const options = {
+        var options = {
             page: req.query.pageNo,
             limit: req.query.size,
         };
 
         if(options.page == null || options.limit == null || options.page == "" || options.limit == ""){
-            res.status(400).json({
-                "success": false,
-                "results": [],
-                "messages": "Page number or size missing from parameters"
-            })
+            // res.status(400).json({
+            //     "success": false,
+            //     "results": [],
+            //     "messages": "Page number or size missing from parameters"
+            // })
+            options = {
+                page: 0,
+                limit: 30,
+            };
         }
         Category.paginate({}, options, (err, categories) => {
             if (err) {
@@ -25,7 +29,7 @@ router.route("/")
                     "messages": err
                 })
             }
-            res.json({
+            res.render('categories',{
                 "success": true,
                 "total": categories.totalDocs,
                 "hasNext": categories.hasNextPage,

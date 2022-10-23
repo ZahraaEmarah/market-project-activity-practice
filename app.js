@@ -24,11 +24,15 @@ mongoose
         app.use(bodyParser.urlencoded({ extended: true}))
         app.use(bodyParser.json())
 
+        app.set('views', './src/Views');
+        app.set('view engine', 'ejs');
+
         app.use("/products", productsRoutes)
         app.use("/categories", categoriesRoutes)
 
         app.get("/", (req, res) => {
-            res.send("ok")
+            // res.send("ok")
+            res.render('home');
         })
     })
 
