@@ -29,8 +29,7 @@ router.route("/")
                     "messages": err
                 })
             }
-            console.log(products.docs)
-            res.render('products', {
+            res.send({
                 "success": true,
                 "total": products.totalDocs,
                 "hasNext": products.hasNextPage,
@@ -90,8 +89,8 @@ router.use("/:id", (req, res, next) => {
     return router
 })
 router.route("/:id")
-    .get(async (req, res) => {
-        res.json({
+    .get((req, res) => {
+        res.send({
             "success": true,
             "result": req.product,
             "messages": "OK"

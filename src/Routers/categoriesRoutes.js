@@ -29,7 +29,7 @@ router.route("/")
                     "messages": err
                 })
             }
-            res.render('categories',{
+            res.send({
                 "success": true,
                 "total": categories.totalDocs,
                 "hasNext": categories.hasNextPage,
