@@ -31,8 +31,7 @@ mongoose
         app.use("/categories", categoriesRoutes)
 
         app.get("/", (req, res) => {
-            // res.send("ok")
-            res.render('home');
+            res.send("ok")
         })
     })
 
